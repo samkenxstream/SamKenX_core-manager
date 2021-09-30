@@ -1,7 +1,9 @@
 import * as Cli from "@arkecosystem/core-cli";
 import { Container } from "@arkecosystem/core-kernel";
-import { Identifiers } from "../ioc";
 import { dirname, join } from "path";
+import parseArgvString from "string-to-argv";
+
+import { Identifiers } from "../ioc";
 
 @Container.injectable()
 export class CliManager {
@@ -17,9 +19,13 @@ export class CliManager {
             throw new Error(`Command ${name} does not exists.`);
         }
 
-        const splitArgs = args.replace(/\s+/g, " ").split(" ");
+        const argv = parseArgvString(args);
 
-        const argv = [name, ...splitArgs];
+        if (argv.length === 0) {
+            argv.push("");
+        }
+
+        argv.unshift(name);
 
         command.register(argv);
 
